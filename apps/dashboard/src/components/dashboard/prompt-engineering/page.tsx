@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from 'react';
 import type { Metadata } from 'next';
 import Box from '@mui/material/Box';

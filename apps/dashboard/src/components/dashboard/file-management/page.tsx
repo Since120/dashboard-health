@@ -1,3 +1,4 @@
+"use client";
 
 import * as React from 'react';
 import type { Metadata } from 'next';
@@ -173,7 +174,7 @@ export default function FileManagementPage(): React.JSX.Element {
   const showDeleteButton = selectedFiles.length > 0;
   
   // Get file icon based on type
-  const getFileIcon = (type: FileType): JSX.Element => {
+  const getFileIcon = (type: FileType): React.ReactElement => {
     switch (type) {
       case FileType.FOLDER:
         return <FolderIcon fontSize="var(--icon-fontSize-md)" />;
