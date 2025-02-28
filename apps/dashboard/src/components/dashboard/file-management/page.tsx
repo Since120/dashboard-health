@@ -1,7 +1,10 @@
 "use client";
 
 import * as React from 'react';
-import type { Metadata } from 'next';
+// Die Metadata-Import und Export werden entfernt
+// import type { Metadata } from 'next';
+// export const metadata = { title: `File Management | Dashboard | ${appConfig.name}` } satisfies Metadata;
+
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -55,7 +58,6 @@ import { ArrowLeft as ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/Arrow
 
 import { appConfig } from '@/config/app';
 
-export const metadata = { title: `File Management | Dashboard | ${appConfig.name}` } satisfies Metadata;
 
 // File types enum
 enum FileType {

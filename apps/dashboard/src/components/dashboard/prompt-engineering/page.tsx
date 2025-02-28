@@ -1,7 +1,10 @@
 "use client";
 
 import * as React from 'react';
-import type { Metadata } from 'next';
+// Die Metadata-Import und Export werden entfernt
+// import type { Metadata } from 'next';
+// export const metadata = { title: `Prompt Engineering | Dashboard | ${appConfig.name}` } satisfies Metadata;
+
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Grid from '@mui/material/Grid';
@@ -41,7 +44,6 @@ import { Upload as UploadIcon } from '@phosphor-icons/react/dist/ssr/Upload';
 
 import { appConfig } from '@/config/app';
 
-export const metadata = { title: `Prompt Engineering | Dashboard | ${appConfig.name}` } satisfies Metadata;
 
 // Define Prompt type
 interface Prompt {

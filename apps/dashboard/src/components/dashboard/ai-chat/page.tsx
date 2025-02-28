@@ -1,239 +1,155 @@
 "use client";
 
 import * as React from 'react';
-import type { Metadata } from 'next';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
+import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
+import Avatar from '@mui/material/Avatar';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import Paper from '@mui/material/Paper';
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import Slider from '@mui/material/Slider';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Tooltip from '@mui/material/Tooltip';
-import { Check as CheckIcon } from '@phosphor-icons/react/dist/ssr/Check';
-import { FloppyDisk as FloppyDiskIcon } from '@phosphor-icons/react/dist/ssr/FloppyDisk';
-import { TrashSimple as TrashSimpleIcon } from '@phosphor-icons/react/dist/ssr/TrashSimple';
-import { FileTxt as FileTxtIcon } from '@phosphor-icons/react/dist/ssr/FileTxt';
-import { FileDoc as FileDocIcon } from '@phosphor-icons/react/dist/ssr/FileDoc';
-import { FilePdf as FilePdfIcon } from '@phosphor-icons/react/dist/ssr/FilePdf';
-import { ArrowsClockwise as ArrowsClockwiseIcon } from '@phosphor-icons/react/dist/ssr/ArrowsClockwise';
-import { Upload as UploadIcon } from '@phosphor-icons/react/dist/ssr/Upload';
+import IconButton from '@mui/material/IconButton';
+import { useTheme } from '@mui/material/styles';
+import SendIcon from '@mui/icons-material/Send';
+import SmartToyIcon from '@mui/icons-material/SmartToy';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';import { Robot as RobotIcon } from '@phosphor-icons/react/dist/ssr/Robot';
+import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User';
 
 import { appConfig } from '@/config/app';
 
-export const metadata = { title: `Prompt Engineering | Dashboard | ${appConfig.name}` } satisfies Metadata;
 
-// Define Prompt type
-interface Prompt {
+// Define message type for chat
+interface Message {
   id: string;
-  title: string;
   content: string;
-  createdAt: Date;
-  updatedAt: Date;
+  sender: 'user' | 'ai';
+  timestamp: Date;
 }
 
-// Define File type for reference files
-interface FileItem {
+// AI Model type
+interface AIModel {
   id: string;
   name: string;
-  type: 'txt' | 'doc' | 'pdf';
-  size: string;
-  createdAt: Date;
+  description: string;
+  provider: string;
 }
 
-// Sample files
-const sampleFiles: FileItem[] = [
-  {
-    id: 'file1',
-    name: 'Overview.txt',
-    type: 'txt',
-    size: '24 KB',
-    createdAt: new Date(2023, 5, 12),
+// Sample AI models
+const aiModels: AIModel[] = [
+  { 
+    id: 'model1', 
+    name: 'GPT-4', 
+    description: 'Most capable model for complex tasks',
+    provider: 'OpenAI' 
   },
-  {
-    id: 'file2',
-    name: 'Specifications.doc',
-    type: 'doc',
-    size: '128 KB',
-    createdAt: new Date(2023, 6, 3),
+  { 
+    id: 'model2', 
+    name: 'Claude 3', 
+    description: 'Balanced model with excellent reasoning',
+    provider: 'Anthropic' 
   },
-  {
-    id: 'file3',
-    name: 'Report.pdf',
-    type: 'pdf',
-    size: '2.3 MB',
-    createdAt: new Date(2023, 7, 15),
+  { 
+    id: 'model3', 
+    name: 'Gemini Pro', 
+    description: 'Versatile model with wide knowledge',
+    provider: 'Google' 
   },
-  {
-    id: 'file4',
-    name: 'Instructions.txt',
-    type: 'txt',
-    size: '16 KB',
-    createdAt: new Date(2023, 8, 22),
-  },
-  {
-    id: 'file5',
-    name: 'Analysis.doc',
-    type: 'doc',
-    size: '345 KB',
-    createdAt: new Date(2023, 9, 7),
-  },
-  {
-    id: 'file6',
-    name: 'Guidelines.pdf',
-    type: 'pdf',
-    size: '1.8 MB',
-    createdAt: new Date(2023, 10, 19),
+  { 
+    id: 'model4', 
+    name: 'Llama 3', 
+    description: 'Open source model with good performance',
+    provider: 'Meta' 
   },
 ];
 
-export default function PromptEngineeringPage(): React.JSX.Element {
-  // State for prompt editor
-  const [promptTitle, setPromptTitle] = React.useState<string>('');
-  const [promptContent, setPromptContent] = React.useState<string>('');
-  const [savedPrompts, setSavedPrompts] = React.useState<Prompt[]>([]);
-  
-  // State for dialogs
-  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState<boolean>(false);
-  const [deletePromptId, setDeletePromptId] = React.useState<string | null>(null);
-  const [loadDialogOpen, setLoadDialogOpen] = React.useState<boolean>(false);
-  const [loadPromptId, setLoadPromptId] = React.useState<string | null>(null);
-  
-  // State for right panel
-  const [temperature, setTemperature] = React.useState<number>(1.0);
-  const [maxTokens, setMaxTokens] = React.useState<number>(2048);
+// Initial sample messages
+const initialMessages: Message[] = [
+  {
+    id: '1',
+    content: 'Hello! How can I assist you today?',
+    sender: 'ai',
+    timestamp: new Date(),
+  },
+];
 
-  // Textarea ref for calculating height
-  const textareaRef = React.useRef<HTMLDivElement>(null);
+export default function AIChatPage(): React.JSX.Element {
+  const theme = useTheme();
+  const [messages, setMessages] = React.useState<Message[]>(initialMessages);
+  const [newMessage, setNewMessage] = React.useState<string>('');
+  const [selectedModel, setSelectedModel] = React.useState<string>('model1');
+  const messagesEndRef = React.useRef<HTMLDivElement>(null);
+  const textFieldRef = React.useRef<HTMLDivElement>(null);
+  const [textFieldHeight, setTextFieldHeight] = React.useState<number>(56); // Initial height
   
-  // Handle saving a prompt
-  const handleSavePrompt = () => {
-    if (!promptTitle.trim()) {
-      alert('Please enter a title for your prompt');
-      return;
-    }
+  // Auto-scroll to bottom of messages
+  React.useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  // Handle sending a new message
+  const handleSendMessage = () => {
+    if (newMessage.trim() === '') return;
     
-    if (!promptContent.trim()) {
-      alert('Please enter content for your prompt');
-      return;
-    }
-    
-    const now = new Date();
-    const newPrompt: Prompt = {
-      id: `prompt-${Date.now()}`,
-      title: promptTitle,
-      content: promptContent,
-      createdAt: now,
-      updatedAt: now,
+    // Add user message
+    const userMessage: Message = {
+      id: `user-${Date.now()}`,
+      content: newMessage,
+      sender: 'user',
+      timestamp: new Date(),
     };
     
-    setSavedPrompts([...savedPrompts, newPrompt]);
-    // Clear form after saving
-    setPromptTitle('');
-    setPromptContent('');
+    setMessages((prev) => [...prev, userMessage]);
+    setNewMessage('');
+    setTextFieldHeight(56); // Reset height
+    
+    // Simulate AI response after a delay
+    setTimeout(() => {
+      const aiResponse: Message = {
+        id: `ai-${Date.now()}`,
+        content: `I'm a simulated AI response to: "${newMessage}"`,
+        sender: 'ai',
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, aiResponse]);
+    }, 1000);
   };
-  
-  // Delete prompt dialog handlers
-  const openDeleteDialog = (id: string) => {
-    setDeletePromptId(id);
-    setDeleteDialogOpen(true);
-  };
-  
-  const closeDeleteDialog = () => {
-    setDeleteDialogOpen(false);
-    setDeletePromptId(null);
-  };
-  
-  const confirmDelete = () => {
-    if (deletePromptId) {
-      setSavedPrompts(savedPrompts.filter(prompt => prompt.id !== deletePromptId));
-    }
-    closeDeleteDialog();
-  };
-  
-  // Load prompt dialog handlers
-  const openLoadDialog = (id: string) => {
-    // Only open dialog if current prompt has content
-    if (promptTitle.trim() || promptContent.trim()) {
-      setLoadPromptId(id);
-      setLoadDialogOpen(true);
-    } else {
-      // If no content, load directly
-      loadPrompt(id);
-    }
-  };
-  
-  const closeLoadDialog = () => {
-    setLoadDialogOpen(false);
-    setLoadPromptId(null);
-  };
-  
-  const confirmLoad = () => {
-    if (loadPromptId) {
-      loadPrompt(loadPromptId);
-    }
-    closeLoadDialog();
-  };
-  
-  const loadPrompt = (id: string) => {
-    const prompt = savedPrompts.find(p => p.id === id);
-    if (prompt) {
-      setPromptTitle(prompt.title);
-      setPromptContent(prompt.content);
-    }
-  };
-  
-  // Handle file drag and drop
-  const handleFileDrop = (file: FileItem) => {
-    // Insert file reference at cursor position
-    const textarea = textareaRef.current?.querySelector('textarea');
-    if (textarea) {
-      const cursorPos = textarea.selectionStart;
-      const textBefore = promptContent.substring(0, cursorPos);
-      const textAfter = promptContent.substring(cursorPos);
-      setPromptContent(`${textBefore}{{file:${file.name}}}${textAfter}`);
-      
-      // Focus back on textarea and set cursor position after insertion
-      setTimeout(() => {
-        textarea.focus();
-        const newCursorPos = cursorPos + `{{file:${file.name}}}`.length;
-        textarea.setSelectionRange(newCursorPos, newCursorPos);
-      }, 0);
+
+  // Handle text input, including Enter key
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      handleSendMessage();
     }
   };
 
-  // Get icon based on file type
-  const getFileIcon = (type: string) => {
-    switch (type) {
-      case 'txt':
-        return <FileTxtIcon fontSize="var(--icon-fontSize-md)" />;
-      case 'doc':
-        return <FileDocIcon fontSize="var(--icon-fontSize-md)" />;
-      case 'pdf':
-        return <FilePdfIcon fontSize="var(--icon-fontSize-md)" />;
-      default:
-        return <FileTxtIcon fontSize="var(--icon-fontSize-md)" />;
+  // Handle input change and auto-resize
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewMessage(event.target.value);
+    adjustTextFieldHeight();
+  };
+
+  // Adjust text field height based on content
+  const adjustTextFieldHeight = () => {
+    const textField = textFieldRef.current?.querySelector('textarea');
+    if (textField) {
+      // Reset height temporarily to get the correct scrollHeight
+      textField.style.height = 'auto';
+      
+      // Calculate new height (clamped between 56px and 200px)
+      const newHeight = Math.min(Math.max(56, textField.scrollHeight), 200);
+      textField.style.height = `${newHeight}px`;
+      setTextFieldHeight(newHeight);
     }
+  };
+
+  // Handle model selection
+  const handleModelChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedModel(event.target.value);
   };
 
   return (
@@ -246,286 +162,173 @@ export default function PromptEngineeringPage(): React.JSX.Element {
       }}
     >
       <Grid container spacing={3}>
-        {/* Main Prompt Editor Area */}
+        {/* Main Chat Area */}
         <Grid item xs={12} md={9}>
-          <Stack spacing={3}>
-            {/* Prompt Editor */}
-            <Card>
-              <Box sx={{ p: 3 }}>
-                <Stack spacing={3}>
-                  <TextField
-                    label="Prompt Title"
-                    fullWidth
-                    variant="outlined"
-                    value={promptTitle}
-                    onChange={(e) => setPromptTitle(e.target.value)}
-                    placeholder="Enter a descriptive title for your prompt"
-                  />
-                  
-                  <TextField
-                    ref={textareaRef}
-                    label="Prompt Content"
-                    fullWidth
-                    multiline
-                    minRows={4}
-                    maxRows={20}
-                    variant="outlined"
-                    value={promptContent}
-                    onChange={(e) => setPromptContent(e.target.value)}
-                    placeholder="Describe your prompt in detail. Drag files from the right panel to reference them."
+          <Card sx={{ height: 'calc(100vh - 180px)', display: 'flex', flexDirection: 'column' }}>
+            {/* Chat Messages Area */}
+            <Box 
+              sx={{ 
+                flex: 1, 
+                overflow: 'auto', 
+                p: 2,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2,
+              }}
+            >
+              {messages.map((message) => (
+                <Stack
+                  key={message.id}
+                  direction="row"
+                  spacing={2}
+                  sx={{
+                    alignItems: 'flex-start',
+                    alignSelf: message.sender === 'user' ? 'flex-end' : 'flex-start',
+                    maxWidth: '80%',
+                  }}
+                >
+                  {message.sender === 'ai' && (
+                    <Avatar sx={{ bgcolor: 'primary.main' }}>
+                      <RobotIcon fontSize="var(--Icon-fontSize)" />
+                    </Avatar>
+                  )}
+                  <Paper
+                    elevation={1}
                     sx={{
-                      '& .MuiInputBase-root': {
-                        height: 'auto',
-                        maxHeight: '75vh',
-                        overflow: 'auto',
+                      p: 2,
+                      borderRadius: 2,
+                      bgcolor: message.sender === 'user' 
+                        ? 'primary.main' 
+                        : theme.palette.mode === 'dark' 
+                          ? 'background.level1' 
+                          : 'background.paper',
+                      color: message.sender === 'user' 
+                        ? 'primary.contrastText' 
+                        : 'text.primary',
+                    }}
+                  >
+                    <Typography variant="body1">{message.content}</Typography>
+                  </Paper>
+                  {message.sender === 'user' && (
+                    <Avatar>
+                      <UserIcon fontSize="var(--Icon-fontSize)" />
+                    </Avatar>
+                  )}
+                </Stack>
+              ))}
+              <div ref={messagesEndRef} />
+            </Box>
+            
+            {/* Message Input Area */}
+            <Box sx={{ p: 2, borderTop: '1px solid', borderColor: 'divider' }}>
+              <Stack direction="row" spacing={1} alignItems="flex-end">
+                <TextField
+                  ref={textFieldRef}
+                  fullWidth
+                  multiline
+                  maxRows={4}
+                  placeholder="Type your message here..."
+                  variant="outlined"
+                  value={newMessage}
+                  onChange={handleInputChange}
+                  onKeyDown={handleKeyDown}
+                  InputProps={{
+                    sx: {
+                      borderRadius: 2,
+                      '& textarea': {
+                        transition: 'height 0.2s',
+                        height: `${textFieldHeight}px`,
+                        resize: 'none',
+                      },
+                    },
+                  }}
+                />
+<IconButton
+  size="large"
+  color="primary"
+  onClick={handleSendMessage}
+  disabled={newMessage.trim() === ''}
+  sx={{
+    height: 56,
+    width: 56,
+    borderRadius: 2,
+    bgcolor: 'primary.main',
+    color: 'white',
+    '&:hover': {
+      bgcolor: 'primary.dark',
+    },
+    '&.Mui-disabled': {
+      bgcolor: 'action.disabledBackground',
+      color: 'action.disabled',
+    },
+  }}
+>
+  <SendIcon />
+</IconButton>
+
+              </Stack>
+            </Box>
+          </Card>
+        </Grid>
+        
+        {/* Right Panel - Model Selection */}
+        <Grid item xs={12} md={3}>
+          <Card sx={{ height: 'calc(100vh - 180px)', p: 2, overflow: 'auto' }}>
+            <Typography variant="h6" gutterBottom>
+              Select AI Model
+            </Typography>
+            <RadioGroup
+              value={selectedModel}
+              onChange={handleModelChange}
+            >
+              {aiModels.map((model) => (
+                <Paper
+                  key={model.id}
+                  sx={{
+                    mb: 2,
+                    p: 2,
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: selectedModel === model.id 
+                      ? 'primary.main' 
+                      : 'divider',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    '&:hover': {
+                      borderColor: 'primary.main',
+                      boxShadow: '0 0 0 1px var(--mui-palette-primary-main)',
+                    },
+                  }}
+                >
+                  <FormControlLabel
+                    value={model.id}
+                    control={<Radio />}
+                    label={
+                      <Stack spacing={1}>
+                        <Typography variant="subtitle1">{model.name}</Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {model.provider}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {model.description}
+                        </Typography>
+                      </Stack>
+                    }
+                    sx={{
+                      width: '100%',
+                      margin: 0,
+                      alignItems: 'flex-start',
+                      '& .MuiFormControlLabel-label': {
+                        width: '100%',
                       },
                     }}
                   />
-                  
-                  <Stack direction="row" spacing={2} justifyContent="flex-end">
-                    <Button
-                      variant="outlined"
-                      color="error"
-                      startIcon={<TrashSimpleIcon />}
-                      onClick={() => {
-                        if (promptTitle.trim() || promptContent.trim()) {
-                          openDeleteDialog('current');
-                        } else {
-                          setPromptTitle('');
-                          setPromptContent('');
-                        }
-                      }}
-                    >
-                      Clear
-                    </Button>
-                    
-                    <Button
-                      variant="contained"
-                      startIcon={<FloppyDiskIcon />}
-                      onClick={handleSavePrompt}
-                      disabled={!promptTitle.trim() || !promptContent.trim()}
-                    >
-                      Save Prompt
-                    </Button>
-                  </Stack>
-                </Stack>
-              </Box>
-            </Card>
-            
-            {/* Saved Prompts Table */}
-            <Card>
-              <Box sx={{ p: 3 }}>
-                <Typography variant="h6" gutterBottom>
-                  Saved Prompts
-                </Typography>
-                
-                {savedPrompts.length === 0 ? (
-                  <Alert severity="info">
-                    <AlertTitle>No saved prompts yet</AlertTitle>
-                    Create and save a prompt to see it listed here.
-                  </Alert>
-                ) : (
-                  <TableContainer>
-                    <Table>
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>Title</TableCell>
-                          <TableCell>Created</TableCell>
-                          <TableCell>Updated</TableCell>
-                          <TableCell align="right">Actions</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {savedPrompts.map((prompt) => (
-                          <TableRow key={prompt.id}>
-                            <TableCell>{prompt.title}</TableCell>
-                            <TableCell>
-                              {prompt.createdAt.toLocaleDateString()}
-                            </TableCell>
-                            <TableCell>
-                              {prompt.updatedAt.toLocaleDateString()}
-                            </TableCell>
-                            <TableCell align="right">
-                              <Stack direction="row" spacing={1} justifyContent="flex-end">
-                                <Tooltip title="Load prompt">
-                                  <IconButton
-                                    color="primary"
-                                    onClick={() => openLoadDialog(prompt.id)}
-                                  >
-                                    <ArrowsClockwiseIcon />
-                                  </IconButton>
-                                </Tooltip>
-                                <Tooltip title="Delete prompt">
-                                  <IconButton
-                                    color="error"
-                                    onClick={() => openDeleteDialog(prompt.id)}
-                                  >
-                                    <TrashSimpleIcon />
-                                  </IconButton>
-                                </Tooltip>
-                              </Stack>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                )}
-              </Box>
-            </Card>
-          </Stack>
-        </Grid>
-        
-        {/* Right Panel - Settings and Files */}
-        <Grid item xs={12} md={3}>
-          <Stack spacing={3}>
-            {/* Model Settings */}
-            <Card>
-              <Box sx={{ p: 3 }}>
-                <Typography variant="h6" gutterBottom>
-                  Model Settings
-                </Typography>
-                
-                <Stack spacing={3}>
-                  <Box>
-                    <Typography gutterBottom>
-                      Temperature: {temperature.toFixed(1)}
-                    </Typography>
-                    <Slider
-                      value={temperature}
-                      onChange={(_, value) => setTemperature(value as number)}
-                      min={0}
-                      max={2}
-                      step={0.1}
-                      marks={[
-                        { value: 0, label: '0' },
-                        { value: 1, label: '1' },
-                        { value: 2, label: '2' },
-                      ]}
-                    />
-                    <Typography variant="caption" color="text.secondary">
-                      Lower values produce more predictable responses, higher values more creative.
-                    </Typography>
-                  </Box>
-                  
-                  <Box>
-                    <Typography gutterBottom>
-                      Max Tokens: {maxTokens}
-                    </Typography>
-                    <Slider
-                      value={maxTokens}
-                      onChange={(_, value) => setMaxTokens(value as number)}
-                      min={256}
-                      max={4096}
-                      step={256}
-                      marks={[
-                        { value: 256, label: '256' },
-                        { value: 2048, label: '2K' },
-                        { value: 4096, label: '4K' },
-                      ]}
-                    />
-                    <Typography variant="caption" color="text.secondary">
-                      Maximum length of the generated response.
-                    </Typography>
-                  </Box>
-                </Stack>
-              </Box>
-            </Card>
-            
-            {/* Files Library */}
-            <Card sx={{ maxHeight: 'calc(100vh - 450px)', overflowY: 'auto' }}>
-              <Box sx={{ p: 3 }}>
-                <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between" mb={2}>
-                  <Typography variant="h6">
-                    Files Library
-                  </Typography>
-                  <Tooltip title="Upload file">
-                    <IconButton color="primary" size="small">
-                      <UploadIcon />
-                    </IconButton>
-                  </Tooltip>
-                </Stack>
-                
-                <List>
-                  {sampleFiles.map((file) => (
-                    <Paper
-                      key={file.id}
-                      sx={{
-                        mb: 1,
-                        cursor: 'grab',
-                        transition: 'all 0.2s',
-                        '&:hover': {
-                          boxShadow: '0 0 0 1px var(--mui-palette-primary-main)',
-                          transform: 'translateY(-2px)',
-                        },
-                        '&:active': {
-                          cursor: 'grabbing',
-                        },
-                      }}
-                      elevation={1}
-                      onClick={() => handleFileDrop(file)}
-                    >
-                      <ListItem>
-                        <ListItemIcon>{getFileIcon(file.type)}</ListItemIcon>
-                        <ListItemText
-                          primary={file.name}
-                          secondary={`${file.size} • ${file.createdAt.toLocaleDateString()}`}
-                        />
-                      </ListItem>
-                    </Paper>
-                  ))}
-                </List>
-                
-                <Typography variant="caption" color="text.secondary" mt={2} display="block">
-                  Click on any file to insert it into your prompt at the cursor position.
-                </Typography>
-              </Box>
-            </Card>
-          </Stack>
+                </Paper>
+              ))}
+            </RadioGroup>
+          </Card>
         </Grid>
       </Grid>
-      
-      {/* Delete Confirmation Dialog */}
-      <Dialog
-        open={deleteDialogOpen}
-        onClose={closeDeleteDialog}
-      >
-        <DialogTitle>
-          {deletePromptId === 'current' ? 'Clear current prompt?' : 'Delete prompt?'}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            {deletePromptId === 'current'
-              ? 'Are you sure you want to clear the current prompt? This action cannot be undone.'
-              : 'Are you sure you want to delete this prompt? This action cannot be undone.'}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={closeDeleteDialog}>Cancel</Button>
-          <Button onClick={confirmDelete} color="error" autoFocus>
-            {deletePromptId === 'current' ? 'Clear' : 'Delete'}
-          </Button>
-        </DialogActions>
-      </Dialog>
-      
-      {/* Load Confirmation Dialog */}
-      <Dialog
-        open={loadDialogOpen}
-        onClose={closeLoadDialog}
-      >
-        <DialogTitle>Load prompt?</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Loading this prompt will replace your current work. Do you want to continue?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={closeLoadDialog}>Cancel</Button>
-          <Button onClick={confirmLoad} color="primary" autoFocus>
-            Load
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 }

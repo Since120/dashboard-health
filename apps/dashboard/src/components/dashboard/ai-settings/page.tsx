@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from 'react';
-import type { Metadata } from 'next';
+// Entferne die metadata-Zeile komplett
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Grid from '@mui/material/Grid';
@@ -30,7 +30,8 @@ import { Check as CheckIcon } from '@phosphor-icons/react/dist/ssr/Check';
 
 import { appConfig } from '@/config/app';
 
-export const metadata = { title: `AI Settings | Dashboard | ${appConfig.name}` } satisfies Metadata;
+// Entferne diese Zeile komplett!
+// export const metadata = { title: `AI Settings | Dashboard | ${appConfig.name}` } satisfies Metadata;
 
 // Interface for API settings
 interface APISettings {
