@@ -21,8 +21,7 @@
 		"@prisma/client": "^6.3.1",
 		"axios": "^1.7.9",
 		"dotenv": "^16.4.7",
-		"prisma": "^6.3.1",
-		"pyro-logger": "workspace:^"
+		"prisma": "^6.3.1"
 	},
 	"devDependencies": {
 		"@eslint/eslintrc": "3.2.0",
