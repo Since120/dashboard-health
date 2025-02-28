@@ -1,0 +1,18 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AIProviderKey {
+  id        String   @id @default(uuid())
+  provider  String   @unique
+  apiKey    String
+  baseUrl   String?
+  timeout   Int      @default(30000)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
